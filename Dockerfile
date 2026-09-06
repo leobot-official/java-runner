@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk-jammy
 
 # Install Node.js & core utilities
 RUN apt-get update && apt-get install -y curl procps && \
