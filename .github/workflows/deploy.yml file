@@ -1,3 +1,0 @@
-git add .
-git commit -m "Configure GitHub Actions deployment for Vite"
-git push origin main
