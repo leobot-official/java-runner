@@ -46,13 +46,13 @@ export default function App() {
     if (initialPortal === 'faculty') {
       return {
         role: 'FACULTY',
-        email: INITIAL_FACULTY[0]?.email || 'faculty@university.edu',
+        email: INITIAL_FACULTY[0]?.email || 'faculty@hidustanuniv.ac.in',
         name: INITIAL_FACULTY[0]?.name || 'Prof. Sathish',
       };
     }
     return {
       role: 'STUDENT',
-      email: 'student@university.edu',
+      email: 'student@student.hindustanuniv.ac.in',
       name: 'Student Candidate',
       regNo: '21BCE0001',
     };
@@ -96,7 +96,7 @@ export default function App() {
 
   // System & Execution Settings
   const [settings, setSettings] = useState<SystemSettings>({
-    renderServiceUrl: 'https://YOUR-RENDER-APP-NAME.onrender.com/execute',
+    renderServiceUrl: 'https://java-runner-q93u.onrender.com/execute',
     apiSecret: 'MY_SECURE_LAB_KEY_123',
     googleSheetsUrl: '',
     enforceFullscreen: true,
