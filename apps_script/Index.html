@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java Online Lab & Examination Portal</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <style>
+    body { background-color: #0b0f19; color: #e2e8f0; font-family: system-ui, -apple-system, sans-serif; }
+    .card { background-color: #131b2e; border: 1px solid #1e293b; border-radius: 12px; }
+    .nav-tabs .nav-link { color: #94a3b8; border: none; font-weight: 600; font-size: 0.85rem; }
+    .nav-tabs .nav-link.active { background-color: #1e293b; color: #38bdf8; border-radius: 8px 8px 0 0; }
+    .form-control, .form-select { background-color: #0f172a; border-color: #334155; color: #f1f5f9; }
+    .form-control:focus, .form-select:focus { background-color: #0f172a; border-color: #38bdf8; color: #f1f5f9; box-shadow: none; }
+    pre { background-color: #070b14; color: #38bdf8; border: 1px solid #1e293b; border-radius: 8px; padding: 12px; }
+    .badge-soft-success { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+    .badge-soft-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-soft-danger { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+  </style>
+</head>
+<body class="p-3">
+  <div class="container-fluid max-w-7xl">
+    <!-- Brand Header -->
+    <header class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom border-secondary">
+      <div class="d-flex align-items-center gap-2">
+        <span class="fs-4 fw-bold text-white"><i class="bi bi-code-slash text-warning"></i> JavaLab<span class="text-warning">Pro</span></span>
+        <span class="badge bg-secondary ms-2">OpenJDK 17</span>
+      </div>
+      <div id="userHeaderBadge" class="d-none">
+        <span id="userNameDisplay" class="badge bg-primary fs-6 p-2"></span>
+        <button onclick="handleLogout()" class="btn btn-sm btn-outline-danger ms-2">Logout</button>
+      </div>
+    </header>
+
+    <div id="alertBox"></div>
+
+    <!-- 1. LOGIN SCREEN -->
+    <div id="loginSection" class="card p-4 mx-auto my-5 shadow-lg" style="max-width: 440px;">
+      <h4 class="text-center fw-bold text-white mb-1">Portal Sign In</h4>
+      <p class="text-center text-muted small mb-4">Google Account & Registration Check</p>
+      
+      <div class="mb-3">
+        <label class="form-label small text-muted">Student Registration Number</label>
+        <input type="text" id="regNoInput" class="form-control font-monospace" placeholder="e.g. 21BCE0001 (Leave blank if Faculty)">
+      </div>
+
+      <button onclick="handleLogin()" id="loginBtn" class="btn btn-primary w-100 py-2 fw-semibold">
+        <i class="bi bi-google me-2"></i> Verify & Sign In
+      </button>
+      <div class="text-center text-muted small mt-3">
+        Faculty will be auto-recognized from the <code>Faculty</code> database sheet.
+      </div>
+    </div>
+
+    <!-- 2. FACULTY PORTAL -->
+    <div id="facultySection" class="d-none">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold text-white mb-0"><i class="bi bi-shield-check text-info me-2"></i>Faculty Management Dashboard</h4>
+      </div>
+
+      <!-- Schedule Exercise Card -->
+      <div class="card p-4 mb-4">
+        <h5 class="fw-bold text-white mb-3"><i class="bi bi-plus-circle text-success me-2"></i>Schedule New Lab Exercise</h5>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label small text-muted">Problem Title</label>
+            <input id="exTitle" class="form-control" placeholder="e.g. Array Reversal">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small text-muted">Open Window (Start)</label>
+            <input type="datetime-local" id="exOpen" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small text-muted">Close Window (End)</label>
+            <input type="datetime-local" id="exClose" class="form-control">
+          </div>
+          <div class="col-12">
+            <label class="form-label small text-muted">Problem Description & Constraints</label>
+            <textarea id="exDesc" class="form-control" rows="3" placeholder="Enter instructions..."></textarea>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small text-success fw-bold"><i class="bi bi-eye me-1"></i>Public Test Case</label>
+            <textarea id="pubIn" class="form-control font-monospace mb-2" rows="2" placeholder="Public Input"></textarea>
+            <textarea id="pubOut" class="form-control font-monospace" rows="2" placeholder="Expected Public Output"></textarea>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small text-warning fw-bold"><i class="bi bi-eye-slash me-1"></i>Private Hidden Test Case (Grading)</label>
+            <textarea id="privIn" class="form-control font-monospace mb-2" rows="2" placeholder="Hidden Input"></textarea>
+            <textarea id="privOut" class="form-control font-monospace" rows="2" placeholder="Expected Hidden Output"></textarea>
+          </div>
+          <div class="col-12 text-end">
+            <button onclick="postExercise()" id="postExBtn" class="btn btn-success px-4 fw-semibold">
+              <i class="bi bi-cloud-arrow-up me-1"></i> Post Exercise to Google Sheet
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. STUDENT PORTAL -->
+    <div id="studentSection" class="d-none">
+      <!-- Anti-cheating HUD -->
+      <div class="alert alert-dark d-flex justify-content-between align-items-center py-2 px-3 mb-3 border border-secondary">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-success"><i class="bi bi-shield-lock me-1"></i>Proctoring Guard Active</span>
+          <span id="stuInfo" class="small text-muted ms-2"></span>
+        </div>
+        <div class="d-flex gap-2">
+          <span id="violationCountBadge" class="badge bg-danger p-2">Violations: 0</span>
+          <button onclick="toggleFullscreen()" class="btn btn-sm btn-outline-info"><i class="bi bi-fullscreen me-1"></i>Fullscreen Exam</button>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <!-- Exercise List -->
+        <div class="col-md-4">
+          <div class="card p-3 h-100">
+            <h6 class="fw-bold text-white mb-3"><i class="bi bi-journal-code text-info me-2"></i>Active Exercises</h6>
+            <div id="exerciseList" class="list-group">
+              <div class="text-muted small p-2">Loading active exercises...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Code Editor & Evaluation -->
+        <div class="col-md-8">
+          <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 id="exTitleDisp" class="fw-bold text-white mb-0">Select an Exercise</h5>
+              <span id="exerciseTimerBadge" class="badge bg-secondary"></span>
+            </div>
+            <p id="exDescDisp" class="text-muted small mb-3"></p>
+
+            <label class="form-label small text-muted d-flex justify-content-between">
+              <span>Main.java</span>
+              <span>Java 17 Compatible</span>
+            </label>
+            <textarea id="codeEditor" class="form-control font-monospace mb-3" rows="12" spellcheck="false"
+              placeholder="public class Main { public static void main(String[] args) { ... } }"></textarea>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <button onclick="runPublicTestOnly()" id="runBtn" class="btn btn-outline-info" disabled>
+                <i class="bi bi-play-circle me-1"></i> Run Public Tests
+              </button>
+              <button onclick="executeAndSubmit()" id="subBtn" class="btn btn-primary px-4 fw-bold" disabled>
+                <i class="bi bi-send me-1"></i> Submit Official Code
+              </button>
+            </div>
+
+            <div id="resultBox" class="mt-3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration: Replace with your deployed Render service URL
+    const RENDER_SERVICE_URL = "https://YOUR-RENDER-APP-NAME.onrender.com/execute";
+    const API_SECRET = "MY_SECURE_LAB_KEY_123";
+
+    let currentUser = null;
+    let selectedEx = null;
+    let localViolations = [];
+
+    function showAlert(msg, type='danger') {
+      document.getElementById('alertBox').innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+          ${msg}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`;
+    }
+
+    function handleLogin() {
+      const regNo = document.getElementById('regNoInput').value;
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = true;
+      btn.innerText = "Verifying with Sheet...";
+
+      google.script.run
+        .withSuccessHandler(res => {
+          btn.disabled = false;
+          btn.innerHTML = `<i class="bi bi-google me-2"></i> Verify & Sign In`;
+          
+          if (res.role === 'FACULTY') {
+            currentUser = res;
+            document.getElementById('loginSection').classList.add('d-none');
+            document.getElementById('facultySection').classList.remove('d-none');
+            document.getElementById('userHeaderBadge').classList.remove('d-none');
+            document.getElementById('userNameDisplay').innerText = `Faculty: ${res.name}`;
+          } else if (res.role === 'STUDENT') {
+            currentUser = res;
+            document.getElementById('loginSection').classList.add('d-none');
+            document.getElementById('studentSection').classList.remove('d-none');
+            document.getElementById('userHeaderBadge').classList.remove('d-none');
+            document.getElementById('userNameDisplay').innerText = `${res.name} (${res.regNo})`;
+            document.getElementById('stuInfo').innerText = `${res.name} (${res.regNo})`;
+            setupAntiCheating();
+            loadExercises();
+          } else {
+            showAlert(res.error || 'Authentication Failed', 'danger');
+          }
+        })
+        .withFailureHandler(err => {
+          btn.disabled = false;
+          btn.innerHTML = `<i class="bi bi-google me-2"></i> Verify & Sign In`;
+          showAlert("Google Apps Script error: " + err.message, 'danger');
+        })
+        .loginUser(regNo);
+    }
+
+    function handleLogout() {
+      location.reload();
+    }
+
+    function postExercise() {
+      const data = {
+        title: document.getElementById('exTitle').value,
+        openTime: document.getElementById('exOpen').value,
+        closeTime: document.getElementById('exClose').value,
+        description: document.getElementById('exDesc').value,
+        publicInput: document.getElementById('pubIn').value,
+        publicOutput: document.getElementById('pubOut').value,
+        privateInput: document.getElementById('privIn').value,
+        privateOutput: document.getElementById('privOut').value
+      };
+
+      const btn = document.getElementById('postExBtn');
+      btn.disabled = true;
+
+      google.script.run
+        .withSuccessHandler(res => {
+          btn.disabled = false;
+          showAlert(res.message, 'success');
+        })
+        .saveExercise(data);
+    }
+
+    function loadExercises() {
+      google.script.run.withSuccessHandler(list => {
+        const container = document.getElementById('exerciseList');
+        container.innerHTML = '';
+        if (!list || list.length === 0) {
+          container.innerHTML = '<div class="text-muted small p-2">No active exercises scheduled right now.</div>';
+          return;
+        }
+
+        list.forEach(ex => {
+          const btn = document.createElement('button');
+          btn.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary mb-1 rounded';
+          btn.innerHTML = `<div class="fw-semibold">${ex.title}</div><small class="text-muted font-monospace">${ex.id}</small>`;
+          btn.onclick = () => {
+            selectedEx = ex;
+            document.getElementById('exTitleDisp').innerText = ex.title;
+            document.getElementById('exDescDisp').innerText = ex.description;
+            document.getElementById('subBtn').disabled = false;
+            document.getElementById('runBtn').disabled = false;
+            document.getElementById('codeEditor').value = `import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        // Write solution here\n        \n    }\n}`;
+          };
+          container.appendChild(btn);
+        });
+      }).getActiveExercises();
+    }
+
+    async function callDockerAPI(code, input, expected) {
+      try {
+        const res = await fetch(RENDER_SERVICE_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_SECRET
+          },
+          body: JSON.stringify({ code: code, input: input || '', expectedOutput: expected || '' })
+        });
+        return await res.json();
+      } catch (err) {
+        return { passed: false, log: "Execution Runner unreachable (" + err.message + "). Check Render URL." };
+      }
+    }
+
+    async function runPublicTestOnly() {
+      if (!selectedEx) return;
+      const code = document.getElementById('codeEditor').value;
+      const box = document.getElementById('resultBox');
+      box.innerHTML = '<div class="spinner-border spinner-border-sm text-info"></div> Running public test...';
+      const pubRes = await callDockerAPI(code, selectedEx.publicInput, selectedEx.publicOutput);
+      box.innerHTML = `
+        <div class="card p-3 mt-2">
+          <h6>Public Test: <span class="badge ${pubRes.passed ? 'bg-success' : 'bg-danger'}">${pubRes.passed ? 'PASSED' : 'FAILED'}</span></h6>
+          <pre>${pubRes.log}</pre>
+        </div>`;
+    }
+
+    async function executeAndSubmit() {
+      if (!selectedEx) return;
+      const code = document.getElementById('codeEditor').value;
+      const box = document.getElementById('resultBox');
+      box.innerHTML = '<div class="spinner-border text-primary"></div> Evaluating code against public and hidden tests...';
+
+      const pubRes = await callDockerAPI(code, selectedEx.publicInput, selectedEx.publicOutput);
+      const privRes = await callDockerAPI(code, selectedEx.privateInput, selectedEx.privateOutput);
+
+      let status = "FAILED";
+      if (pubRes.passed && privRes.passed) status = "ALL TEST CASES PASSED";
+      else if (pubRes.passed || privRes.passed) status = "PARTIAL PASS";
+
+      box.innerHTML = `
+        <div class="card p-3 mt-2">
+          <h6>Official Status: <span class="badge ${status === 'ALL TEST CASES PASSED' ? 'badge-soft-success' : 'badge-soft-danger'}">${status}</span></h6>
+          <p class="mb-1 fw-bold small text-info">Public Test Result:</p>
+          <pre>${pubRes.log}</pre>
+          <p class="mb-1 fw-bold small text-warning">Hidden Test Result:</p>
+          <pre>${privRes.log}</pre>
+        </div>`;
+
+      // Batch sync submission & violations to Google Sheets
+      google.script.run.saveSubmissionAndViolations({
+        regNo: currentUser.regNo,
+        exerciseId: selectedEx.id,
+        code: code,
+        status: status,
+        publicLog: pubRes.log,
+        privateLog: privRes.log,
+        violations: localViolations
+      });
+
+      localViolations = [];
+      document.getElementById('violationCountBadge').innerText = "Violations: 0";
+    }
+
+    // Anti-cheating listeners
+    function setupAntiCheating() {
+      window.addEventListener('blur', () => recordViolation('TAB_SWITCH', 'Lost window focus / switched tab'));
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) recordViolation('FULLSCREEN_EXIT', 'Exited fullscreen mode');
+      });
+      document.getElementById('codeEditor').addEventListener('paste', (e) => {
+        recordViolation('PASTE', 'Pasted content into code editor');
+      });
+    }
+
+    function recordViolation(type, details) {
+      if (!selectedEx) return;
+      localViolations.push({ time: new Date().toISOString(), type: type, details: details });
+      document.getElementById('violationCountBadge').innerText = `Violations: ${localViolations.length}`;
+      showAlert(`Anti-Cheating Triggered: ${type} logged.`, 'warning');
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+      }
+    }
+  </script>
+</body>
+</html>

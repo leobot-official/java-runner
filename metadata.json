@@ -1,0 +1,6 @@
+{
+  "name": "Java Lab Pro - Automated Examination & Proctoring Platform",
+  "description": "Comprehensive Java Online Lab system with dedicated Faculty Management Dashboard, Anti-Cheating Proctoring, Student IDE, Test Case Evaluation, and Docker/Apps Script Deployment Hub.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

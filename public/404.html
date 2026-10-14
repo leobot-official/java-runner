@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>JavaLab Portal Redirect</title>
+    <script>
+      // Single Page App routing for GitHub Pages
+      // Redirects direct subpaths like /student and /faculty to hash routes like /#/student
+      var l = window.location;
+      var pathname = l.pathname;
+      var repoName = pathname.split('/')[1] || '';
+      
+      // Check if path contains student or faculty
+      var destination = 'student';
+      if (pathname.toLowerCase().includes('faculty')) {
+        destination = 'faculty';
+      }
+
+      var target = l.protocol + '//' + l.host + '/' + (repoName ? repoName + '/' : '') + '#/' + destination + l.search;
+      window.location.replace(target);
+    </script>
+  </head>
+  <body style="background:#0b0f19;color:#e2e8f0;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;">
+    <div style="text-align:center;">
+      <h3>Opening JavaLab Portal...</h3>
+      <p style="color:#94a3b8;font-size:14px;">Redirecting to examination workspace.</p>
+    </div>
+  </body>
+</html>
